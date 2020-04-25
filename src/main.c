@@ -6,6 +6,11 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#define ANSI_COLOR_RED "\x1b[31m"
+#define ANSI_COLOR_GREEN "\x1b[32m"
+#define ANSI_COLOR_YELLOW "\x1b[33m"
+#define ANSI_COLOR_RESET "\x1b[0m"
+
 typedef struct dbEntry {
 	unsigned int id;
 	char name[30];
@@ -49,7 +54,9 @@ int main(int argc, const char** argv) {
 		DIR* dir = opendir(argv[4]);
 		struct dirent* dirent = readdir(dir);
 		if (dirent == NULL) {
-			fprintf(stderr, "Directory %s doesn't exist or can't be opened. Check permissions\n",
+			fprintf(stderr,
+				"Directory %s doesn't exist or can't be "
+				"opened. Check permissions\n",
 				argv[4]);
 			exit(-1);
 		}
@@ -129,18 +136,29 @@ int main(int argc, const char** argv) {
 					FILE* file = fopen(fpath, "rb");
 					if (file != NULL) {
 						md5digest(file, md5);
-						if (md5match(md5, entry->md5) == 0) {
+						if (md5match(md5, entry->md5) ==
+						    0) {
 							printf(
+							    ANSI_COLOR_GREEN
 							    "File %s hadn't "
-							    "changed\n",
+							    "changed"
+							    "\n" ANSI_COLOR_RESET,
 							    entry->name);
 						} else {
 							printf(
-							    "FILE %s CHANGED\n",
+							    ANSI_COLOR_YELLOW
+							    "FILE %s "
+							    "CHANGED"
+							    "\n" ANSI_COLOR_RESET,
 							    entry->name);
-							}	
-					}
-					else printf("Error opening file %s/file is empty\n", entry->name);
+						}
+					} else
+						printf(
+						    ANSI_COLOR_RED
+						    "Error opening file "
+						    "%s/file is "
+						    "empty\n" ANSI_COLOR_RESET,
+						    entry->name);
 					printf("\n");
 					fpath = "";
 				}
